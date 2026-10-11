@@ -1,0 +1,1310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Taxi trip price prediction using a Random Forest machine learning model.">
+    <title>CabFare | Taxi Trip Price Prediction</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --yellow: #ffc928;
+            --yellow-dark: #e9a900;
+            --ink: #17212b;
+            --muted: #687481;
+            --surface: #ffffff;
+            --background: #f5f7fa;
+            --border: #e4e9ef;
+            --dark: #17212b;
+            --green: #198754;
+        }
+
+        * {
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            margin: 0;
+            font-family: "DM Sans", sans-serif;
+            color: var(--ink);
+            background: var(--background);
+        }
+
+        h1, h2, h3, h4, h5, .navbar-brand {
+            font-family: "Outfit", sans-serif;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        .navbar {
+            background: var(--dark);
+            padding: 15px 0;
+        }
+
+        .navbar-brand {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.6px;
+        }
+
+        .navbar-brand:hover {
+            color: var(--yellow);
+        }
+
+        .brand-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            background: var(--yellow);
+            color: var(--dark);
+            border-radius: 12px;
+            margin-right: 9px;
+        }
+
+        .navbar-nav .nav-link {
+            color: #d8dee6;
+            font-size: 0.94rem;
+            font-weight: 600;
+            margin: 0 5px;
+            transition: color 0.2s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            color: var(--yellow);
+        }
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            padding: 85px 0 90px;
+            background: var(--dark);
+            color: white;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            width: 420px;
+            height: 420px;
+            border: 70px solid rgba(255, 201, 40, 0.08);
+            border-radius: 50%;
+            right: -100px;
+            top: -180px;
+        }
+
+        .hero::after {
+            content: "";
+            position: absolute;
+            width: 250px;
+            height: 250px;
+            border: 40px solid rgba(255, 201, 40, 0.06);
+            border-radius: 50%;
+            right: 170px;
+            bottom: -170px;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--yellow);
+            background: rgba(255, 201, 40, 0.12);
+            border: 1px solid rgba(255, 201, 40, 0.25);
+            border-radius: 30px;
+            padding: 8px 15px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            margin-bottom: 22px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 5vw, 4.3rem);
+            line-height: 1.08;
+            font-weight: 800;
+            letter-spacing: -1.8px;
+            max-width: 720px;
+        }
+
+        .hero h1 span {
+            color: var(--yellow);
+        }
+
+        .hero p {
+            color: #c5ced8;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            max-width: 650px;
+            margin: 22px 0 30px;
+        }
+
+        .btn-taxi {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 9px;
+            padding: 13px 22px;
+            border-radius: 10px;
+            background: var(--yellow);
+            color: var(--dark);
+            border: 2px solid var(--yellow);
+            font-weight: 800;
+            transition: all 0.2s ease;
+        }
+
+        .btn-taxi:hover {
+            background: #ffda65;
+            border-color: #ffda65;
+            color: var(--dark);
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-light-custom {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 13px 22px;
+            border: 1px solid #637080;
+            border-radius: 10px;
+            color: white;
+            font-weight: 700;
+            transition: all 0.2s ease;
+        }
+
+        .btn-outline-light-custom:hover {
+            border-color: var(--yellow);
+            color: var(--yellow);
+        }
+
+        .hero-taxi {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 260px;
+            color: var(--yellow);
+            font-size: clamp(130px, 19vw, 235px);
+            transform: rotate(-5deg);
+            filter: drop-shadow(0 20px 30px rgba(0, 0, 0, 0.22));
+        }
+
+        .section {
+            padding: 75px 0;
+            scroll-margin-top: 80px;
+        }
+
+        .section-light {
+            background: white;
+        }
+
+        .section-heading {
+            text-align: center;
+            max-width: 750px;
+            margin: 0 auto 42px;
+        }
+
+        .section-label {
+            display: inline-block;
+            color: #8c6800;
+            background: #fff2c4;
+            border-radius: 25px;
+            padding: 7px 13px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 14px;
+        }
+
+        .section-heading h2 {
+            font-size: clamp(1.9rem, 3vw, 2.7rem);
+            font-weight: 800;
+            letter-spacing: -0.8px;
+            margin-bottom: 13px;
+        }
+
+        .section-heading p {
+            color: var(--muted);
+            line-height: 1.8;
+            margin-bottom: 0;
+        }
+
+        .feature-card,
+        .info-card,
+        .form-card,
+        .result-card {
+            height: 100%;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            padding: 27px;
+            box-shadow: 0 8px 30px rgba(23, 33, 43, 0.035);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 15px 35px rgba(23, 33, 43, 0.08);
+        }
+
+        .feature-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 52px;
+            height: 52px;
+            border-radius: 15px;
+            background: #fff2c4;
+            color: #725400;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+        }
+
+        .feature-card h3 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 11px;
+        }
+
+        .feature-card p,
+        .info-card p {
+            color: var(--muted);
+            line-height: 1.75;
+            margin-bottom: 0;
+        }
+
+        .project-banner {
+            background: var(--dark);
+            color: white;
+            padding: 35px;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .project-banner h3 {
+            font-size: 1.65rem;
+            font-weight: 800;
+            margin-bottom: 13px;
+        }
+
+        .project-banner p {
+            color: #c5ced8;
+            line-height: 1.8;
+            margin-bottom: 0;
+        }
+
+        .project-stat {
+            padding: 18px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.07);
+            height: 100%;
+        }
+
+        .project-stat strong {
+            display: block;
+            color: var(--yellow);
+            font-family: "Outfit", sans-serif;
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .project-stat span {
+            color: #c5ced8;
+            font-size: 0.85rem;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+            border: 1px solid var(--border);
+            border-radius: 15px;
+            background: white;
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background: var(--dark);
+            color: white;
+            padding: 16px;
+            border: 0;
+            white-space: nowrap;
+        }
+
+        .table tbody td {
+            padding: 15px 16px;
+            vertical-align: middle;
+            color: #4c5967;
+            border-color: #edf0f4;
+        }
+
+        .column-name {
+            color: #8c6800;
+            background: #fff2c4;
+            border-radius: 6px;
+            padding: 5px 8px;
+            font-family: monospace;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        .algorithm-step {
+            display: flex;
+            gap: 17px;
+            padding: 21px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .algorithm-step:last-child {
+            border-bottom: 0;
+        }
+
+        .step-number {
+            flex: 0 0 43px;
+            height: 43px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--yellow);
+            color: var(--dark);
+            border-radius: 13px;
+            font-family: "Outfit", sans-serif;
+            font-weight: 800;
+        }
+
+        .algorithm-step h4 {
+            font-size: 1.08rem;
+            font-weight: 700;
+            margin: 2px 0 7px;
+        }
+
+        .algorithm-step p {
+            color: var(--muted);
+            line-height: 1.7;
+            margin: 0;
+        }
+
+        .algorithm-note {
+            background: #fff8df;
+            border: 1px solid #f3df95;
+            padding: 17px;
+            border-radius: 12px;
+            color: #70570b;
+            line-height: 1.7;
+        }
+
+        .form-card {
+            padding: clamp(22px, 4vw, 38px);
+        }
+
+        .form-title {
+            font-weight: 800;
+            font-size: 1.55rem;
+            margin-bottom: 8px;
+        }
+
+        .form-subtitle {
+            color: var(--muted);
+            line-height: 1.7;
+            margin-bottom: 27px;
+        }
+
+        .form-label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .form-control,
+        .form-select {
+            min-height: 48px;
+            border: 1px solid #dce2e9;
+            border-radius: 10px;
+            background-color: #fff;
+            padding: 11px 13px;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #e6b51e;
+            box-shadow: 0 0 0 0.2rem rgba(255, 201, 40, 0.2);
+        }
+
+        .input-group-text {
+            border-color: #dce2e9;
+            border-radius: 10px 0 0 10px;
+            background: #f3f5f8;
+        }
+
+        .input-group .form-control {
+            border-radius: 0 10px 10px 0;
+        }
+
+        .field-help {
+            display: block;
+            color: var(--muted);
+            font-size: 0.78rem;
+            margin-top: 6px;
+        }
+
+        .btn-predict {
+            width: 100%;
+            padding: 15px;
+            background: var(--yellow);
+            color: var(--dark);
+            border: none;
+            border-radius: 11px;
+            font-weight: 800;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+
+        .btn-predict:hover {
+            background: #ffda65;
+            transform: translateY(-2px);
+        }
+
+        .result-card {
+            height: auto;
+            margin-top: 24px;
+            border-top: 5px solid var(--yellow);
+            padding: 30px;
+        }
+
+        .result-label {
+            color: var(--muted);
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .result-price {
+            color: var(--green);
+            font-family: "Outfit", sans-serif;
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin: 12px 0;
+            overflow-wrap: anywhere;
+        }
+
+        .result-note {
+            color: var(--muted);
+            line-height: 1.7;
+        }
+
+        .result-metric {
+            height: 100%;
+            padding: 17px;
+            background: #f5f7fa;
+            border-radius: 12px;
+        }
+
+        .result-metric strong {
+            display: block;
+            font-family: "Outfit", sans-serif;
+            font-size: 1.05rem;
+            margin-bottom: 6px;
+        }
+
+        .result-metric span {
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+
+        .notice {
+            padding: 16px;
+            border-radius: 12px;
+            line-height: 1.7;
+            font-size: 0.9rem;
+        }
+
+        .notice-warning {
+            background: #fff8df;
+            color: #70570b;
+            border: 1px solid #f3df95;
+        }
+
+        .notice-info {
+            background: #eaf4ff;
+            color: #24527a;
+            border: 1px solid #c9e2ff;
+        }
+
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 35px 0;
+        }
+
+        .footer-brand {
+            color: var(--yellow);
+            font-family: "Outfit", sans-serif;
+            font-size: 1.3rem;
+            font-weight: 800;
+        }
+
+        .footer p {
+            color: #c5ced8;
+            line-height: 1.7;
+            margin-bottom: 0;
+        }
+
+        .footer-links a {
+            color: #c5ced8;
+            margin-left: 16px;
+            font-size: 0.9rem;
+        }
+
+        .footer-links a:hover {
+            color: var(--yellow);
+        }
+
+        .back-to-top {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            z-index: 10;
+            width: 45px;
+            height: 45px;
+            border: none;
+            border-radius: 13px;
+            background: var(--yellow);
+            color: var(--dark);
+            font-size: 1.2rem;
+            box-shadow: 0 5px 18px rgba(0, 0, 0, 0.12);
+        }
+
+        @media (max-width: 767px) {
+            .hero {
+                padding: 60px 0;
+            }
+
+            .hero-taxi {
+                min-height: 150px;
+                font-size: 125px;
+                margin-top: 20px;
+            }
+
+            .section {
+                padding: 55px 0;
+            }
+
+            .project-banner {
+                padding: 25px;
+            }
+
+            .footer-links {
+                margin-top: 18px;
+            }
+
+            .footer-links a {
+                margin: 0 12px 0 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg sticky-top">
+    <div class="container">
+        <a class="navbar-brand d-flex align-items-center" href="#home">
+            <span class="brand-icon"><i class="bi bi-taxi-front-fill"></i></span>
+            CabFare
+        </a>
+
+        <button class="navbar-toggler bg-warning" type="button"
+                data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                aria-controls="mainNavbar" aria-expanded="false"
+                aria-label="Toggle navigation">
+            <i class="bi bi-list fs-4"></i>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            <ul class="navbar-nav ms-auto align-items-lg-center">
+                <li class="nav-item"><a class="nav-link" href="#home">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="#project">Project</a></li>
+                <li class="nav-item"><a class="nav-link" href="#dataset">Dataset</a></li>
+                <li class="nav-item"><a class="nav-link" href="#algorithm">Algorithm</a></li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#test">Predict Fare</a>
+                </li>
+                <li class="nav-item ms-lg-2 mt-2 mt-lg-0">
+                    <a class="btn btn-taxi py-2 px-3" href="#test">
+                        <i class="bi bi-lightning-charge-fill"></i>
+                        Try Prediction
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<header class="hero" id="home">
+    <div class="container hero-content">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-8">
+                <div class="eyebrow">
+                    <i class="bi bi-cpu-fill"></i>
+                    MACHINE LEARNING PROJECT
+                </div>
+
+                <h1>Smarter Trips.<br><span>Better Fare Estimates.</span></h1>
+
+                <p>
+                    Estimate taxi trip prices using trip distance, travel time,
+                    traffic conditions, weather, passenger count, and fare rates.
+                    Enter your trip details and let a trained machine learning
+                    model generate an estimated fare.
+                </p>
+
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="#test" class="btn btn-taxi">
+                        <i class="bi bi-calculator-fill"></i>
+                        Estimate Trip Fare
+                    </a>
+                    <a href="#project" class="btn-outline-light-custom">
+                        Explore Project
+                        <i class="bi bi-arrow-down ms-2"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="hero-taxi" aria-label="Taxi illustration">
+                    <i class="bi bi-taxi-front-fill"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<main>
+
+<section class="section" id="project">
+    <div class="container">
+        <div class="section-heading">
+            <span class="section-label">Project Overview</span>
+            <h2>About CabFare</h2>
+            <p>
+                A machine learning web application designed to estimate trip
+                prices from historical trip information and pricing features.
+            </p>
+        </div>
+
+        <div class="project-banner mb-4">
+            <div class="row align-items-center g-4">
+                <div class="col-lg-8">
+                    <h3><i class="bi bi-car-front-fill me-2" style="color: var(--yellow);"></i>Taxi Trip Price Prediction</h3>
+                    <p>
+                        The application uses a Random Forest Regressor trained
+                        on the supplied CSV dataset. It learns relationships
+                        between trip characteristics and recorded trip prices.
+                        A user can enter a new trip and receive a predicted
+                        price from the saved model.
+                    </p>
+                </div>
+                <div class="col-lg-4">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <div class="project-stat">
+                                <strong>Random Forest</strong>
+                                <span>ML algorithm</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="project-stat">
+                                <strong>Regression</strong>
+                                <span>Prediction type</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="project-stat">
+                                <strong>10 Features</strong>
+                                <span>Trip inputs</span>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="project-stat">
+                                <strong>CSV Dataset</strong>
+                                <span>Training source</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-signpost-split-fill"></i></div>
+                    <h3>Trip Details</h3>
+                    <p>
+                        Uses distance, duration, time of day, day type,
+                        passenger count, traffic, and weather to describe
+                        the trip.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-diagram-3-fill"></i></div>
+                    <h3>Machine Learning</h3>
+                    <p>
+                        A Random Forest model combines predictions from
+                        multiple decision trees to estimate a continuous
+                        trip-price value.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-receipt-cutoff"></i></div>
+                    <h3>Fare Estimation</h3>
+                    <p>
+                        Submit new trip information to obtain an estimated
+                        fare based on patterns learned from the training
+                        dataset.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section section-light" id="dataset">
+    <div class="container">
+        <div class="section-heading">
+            <span class="section-label">Dataset Information</span>
+            <h2>Understand the Data</h2>
+            <p>
+                The model uses the following ten input columns and learns to
+                predict the target column, <code>Trip_Price</code>.
+            </p>
+        </div>
+
+        <div class="table-wrap">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Column Name</th>
+                        <th>Type</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="column-name">Trip_Distance_km</span></td>
+                        <td>Numeric</td>
+                        <td>Distance travelled during the trip, in kilometres.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="column-name">Time_of_Day</span></td>
+                        <td>Categorical</td>
+                        <td>Time period of the trip: Morning, Afternoon, Evening, or Night.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="column-name">Day_of_Week</span></td>
+                        <td>Categorical</td>
+                        <td>Whether the trip takes place on a Weekday or Weekend.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="column-name">Passenger_Count</span></td>
+                        <td>Integer</td>
+                        <td>Number of passengers travelling in the taxi.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="column-name">Traffic_Conditions</span></td>
+                        <td>Categorical</td>
+                        <td>Traffic level recorded as Low, Medium, or High.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="column-name">Weather</span></td>
+                        <td>Categorical</td>
+                        <td>Weather condition recorded as Clear, Rainy, or Cloudy.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="column-name">Base_Fare</span></td>
+                        <td>Numeric</td>
+                        <td>Base amount used in the fare calculation.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="column-name">Per_Km_Rate</span></td>
+                        <td>Numeric</td>
+                        <td>Fare rate applied per kilometre.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="column-name">Per_Minute_Rate</span></td>
+                        <td>Numeric</td>
+                        <td>Fare rate applied per minute.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="column-name">Trip_Duration_Minutes</span></td>
+                        <td>Numeric</td>
+                        <td>Estimated trip duration, in minutes.</td>
+                    </tr>
+                    <tr class="table-warning">
+                        <td><span class="column-name">Trip_Price</span></td>
+                        <td><strong>Target</strong></td>
+                        <td><strong>Recorded trip price that the model learns to predict.</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="notice notice-info mt-4">
+            <i class="bi bi-info-circle-fill me-2"></i>
+            <strong>Important:</strong> The sample dataset does not identify the
+            fare currency. The application therefore displays the prediction
+            as a numeric amount without assigning a currency symbol. Use the
+            currency and units specified by your actual dataset.
+        </div>
+    </div>
+</section>
+
+<section class="section" id="algorithm">
+    <div class="container">
+        <div class="section-heading">
+            <span class="section-label">Model Details</span>
+            <h2>Random Forest Regressor</h2>
+            <p>
+                The model trains multiple decision trees and combines their
+                outputs to estimate trip prices.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="info-card">
+                    <div class="algorithm-step">
+                        <div class="step-number">01</div>
+                        <div>
+                            <h4>Load and Prepare the Dataset</h4>
+                            <p>
+                                Pandas loads the CSV file. Missing values are
+                                filled using forward fill and backward fill
+                                before separating input features and the target.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="algorithm-step">
+                        <div class="step-number">02</div>
+                        <div>
+                            <h4>Encode Categorical Features</h4>
+                            <p>
+                                OneHotEncoder converts text features such as
+                                time of day, day type, traffic, and weather
+                                into a numerical representation. Unknown
+                                categories are ignored by the encoder.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="algorithm-step">
+                        <div class="step-number">03</div>
+                        <div>
+                            <h4>Train the Random Forest</h4>
+                            <p>
+                                The model uses 200 decision trees. Each tree
+                                learns patterns from the training records,
+                                and their outputs are combined into a final
+                                regression prediction.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="algorithm-step">
+                        <div class="step-number">04</div>
+                        <div>
+                            <h4>Evaluate and Save</h4>
+                            <p>
+                                When there are enough records, the code
+                                evaluates a train-test split using Mean
+                                Absolute Error and, when appropriate, the
+                                R² score. It then trains on all available
+                                records and saves the pipeline as
+                                <code>trip_price_model.pkl</code>.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="algorithm-step">
+                        <div class="step-number">05</div>
+                        <div>
+                            <h4>Predict a New Trip</h4>
+                            <p>
+                                Flask receives the form data, validates the
+                                values, creates a DataFrame with the expected
+                                feature names, and passes it to the saved
+                                model for prediction.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <div class="info-card mb-4">
+                    <div class="feature-icon"><i class="bi bi-tree-fill"></i></div>
+                    <h3 class="fw-bold mb-3">Why Random Forest?</h3>
+                    <p>
+                        Random Forest can learn non-linear relationships and
+                        interactions between trip variables. Combining many
+                        trees can reduce the variance of an individual tree.
+                    </p>
+
+                    <hr class="my-4">
+
+                    <p class="mb-3"><strong>Algorithm:</strong> Random Forest Regressor</p>
+                    <p class="mb-3"><strong>Number of trees:</strong> 200</p>
+                    <p class="mb-3"><strong>Random state:</strong> 42</p>
+                    <p class="mb-0"><strong>Evaluation:</strong> MAE and R² when applicable</p>
+                </div>
+
+                <div class="algorithm-note">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <strong>Model limitation:</strong> prediction quality depends
+                    on the size, quality, and representativeness of the training
+                    dataset. A very small sample cannot establish reliable
+                    real-world fare accuracy.
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section section-light" id="test">
+    <div class="container">
+        <div class="section-heading">
+            <span class="section-label">Try the Model</span>
+            <h2>Estimate Your Taxi Fare</h2>
+            <p>
+                Enter the details of a trip. Fields are checked before the
+                trained model generates an estimated trip price.
+            </p>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="form-card">
+                    <div class="d-flex align-items-start gap-3 mb-4">
+                        <div class="feature-icon mb-0 flex-shrink-0">
+                            <i class="bi bi-car-front-fill"></i>
+                        </div>
+                        <div>
+                            <h3 class="form-title">Trip Information</h3>
+                            <p class="form-subtitle mb-0">
+                                Complete all fields using values and categories
+                                consistent with your training dataset.
+                            </p>
+                        </div>
+                    </div>
+
+                    {% if error %}
+                    <div class="alert alert-danger" role="alert">
+                        <i class="bi bi-exclamation-circle-fill me-2"></i>
+                        {{ error }}
+                    </div>
+                    {% endif %}
+
+                    <form method="POST" action="#test" id="tripForm">
+                        <div class="row g-4">
+
+                            <div class="col-md-6">
+                                <label for="distance" class="form-label">Trip Distance (km)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-signpost-2"></i></span>
+                                    <input type="number" class="form-control" id="distance"
+                                           name="distance" min="0.01" step="any"
+                                           value="{{ form_data.get('distance', '') }}"
+                                           placeholder="e.g. 19.35" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="duration" class="form-label">Trip Duration (minutes)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                                    <input type="number" class="form-control" id="duration"
+                                           name="duration" min="0.01" step="any"
+                                           value="{{ form_data.get('duration', '') }}"
+                                           placeholder="e.g. 53.82" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="time_of_day" class="form-label">Time of Day</label>
+                                <select class="form-select" id="time_of_day" name="time_of_day" required>
+                                    <option value="">Select time of day</option>
+                                    {% for option in ['Morning', 'Afternoon', 'Evening', 'Night'] %}
+                                    <option value="{{ option }}" {% if form_data.get('time_of_day', '') == option %}selected{% endif %}>
+                                        {{ option }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="day_of_week" class="form-label">Day Type</label>
+                                <select class="form-select" id="day_of_week" name="day_of_week" required>
+                                    <option value="">Select day type</option>
+                                    {% for option in ['Weekday', 'Weekend'] %}
+                                    <option value="{{ option }}" {% if form_data.get('day_of_week', '') == option %}selected{% endif %}>
+                                        {{ option }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="passengers" class="form-label">Passenger Count</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-people"></i></span>
+                                    <input type="number" class="form-control" id="passengers"
+                                           name="passengers" min="1" step="1"
+                                           value="{{ form_data.get('passengers', '') }}"
+                                           placeholder="e.g. 3" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="traffic" class="form-label">Traffic Conditions</label>
+                                <select class="form-select" id="traffic" name="traffic" required>
+                                    <option value="">Select traffic level</option>
+                                    {% for option in ['Low', 'Medium', 'High'] %}
+                                    <option value="{{ option }}" {% if form_data.get('traffic', '') == option %}selected{% endif %}>
+                                        {{ option }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="weather" class="form-label">Weather</label>
+                                <select class="form-select" id="weather" name="weather" required>
+                                    <option value="">Select weather</option>
+                                    {% for option in ['Clear', 'Rainy', 'Cloudy'] %}
+                                    <option value="{{ option }}" {% if form_data.get('weather', '') == option %}selected{% endif %}>
+                                        {{ option }}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="base_fare" class="form-label">Base Fare</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-cash-coin"></i></span>
+                                    <input type="number" class="form-control" id="base_fare"
+                                           name="base_fare" min="0" step="any"
+                                           value="{{ form_data.get('base_fare', '') }}"
+                                           placeholder="e.g. 3.56" required>
+                                </div>
+                                <span class="field-help">Use the same currency scale as the dataset.</span>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="per_km_rate" class="form-label">Rate per Kilometre</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-speedometer2"></i></span>
+                                    <input type="number" class="form-control" id="per_km_rate"
+                                           name="per_km_rate" min="0" step="any"
+                                           value="{{ form_data.get('per_km_rate', '') }}"
+                                           placeholder="e.g. 0.80" required>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="per_minute_rate" class="form-label">Rate per Minute</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-stopwatch"></i></span>
+                                    <input type="number" class="form-control" id="per_minute_rate"
+                                           name="per_minute_rate" min="0" step="any"
+                                           value="{{ form_data.get('per_minute_rate', '') }}"
+                                           placeholder="e.g. 0.32" required>
+                                </div>
+                            </div>
+
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn-predict" id="predictButton">
+                                    <i class="bi bi-lightning-charge-fill me-2"></i>
+                                    Predict Trip Price
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+
+                    {% if prediction is not none %}
+                    <div class="result-card" id="predictionResult" aria-live="polite">
+                        <div class="result-label">
+                            <i class="bi bi-check-circle-fill text-success me-2"></i>
+                            Estimated Trip Price
+                        </div>
+
+                        <div class="result-price">{{ "{:,.2f}".format(prediction) }}</div>
+
+                        <p class="result-note">
+                            This is the model's estimated trip price using
+                            the details you provided. It is not a confirmed
+                            fare or a quote from a taxi operator.
+                        </p>
+
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <div class="result-metric">
+                                    <strong>{{ form_data.get('distance', '—') }} km</strong>
+                                    <span>Trip distance entered</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="result-metric">
+                                    <strong>{{ form_data.get('duration', '—') }} minutes</strong>
+                                    <span>Trip duration entered</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="notice notice-info mt-4">
+                            <i class="bi bi-info-circle-fill me-2"></i>
+                            The displayed number uses the target scale found
+                            in your training dataset. A currency symbol is not
+                            shown because the sample data does not specify one.
+                        </div>
+
+                        <a href="#test" class="btn btn-dark mt-4">
+                            <i class="bi bi-arrow-repeat me-2"></i>
+                            Try Another Trip
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section" id="about">
+    <div class="container">
+        <div class="section-heading">
+            <span class="section-label">Project Notes</span>
+            <h2>Responsible Fare Estimation</h2>
+            <p>
+                CabFare is a machine learning demonstration. Its predictions
+                depend on the data used to train the model.
+            </p>
+        </div>
+
+        <div class="row g-4">
+            <div class="col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-shield-check"></i></div>
+                    <h3>Prediction, Not a Guarantee</h3>
+                    <p>
+                        A predicted price can differ from an actual taxi fare.
+                        Real prices may include surcharges, tolls, waiting
+                        charges, local regulations, and operator-specific rules
+                        that are not represented in the dataset.
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon"><i class="bi bi-database-check"></i></div>
+                    <h3>Dataset Quality Matters</h3>
+                    <p>
+                        Reliable results require sufficient, representative
+                        training examples. The single sample row shown in the
+                        question is not enough to train a reliable model or
+                        evaluate its real-world performance.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+</main>
+
+<footer class="footer">
+    <div class="container">
+        <div class="row align-items-center g-3">
+            <div class="col-lg-7">
+                <div class="footer-brand">
+                    <i class="bi bi-taxi-front-fill me-2"></i>CabFare
+                </div>
+                <p class="mt-2">
+                    Machine learning-based taxi trip price prediction.
+                    Built with Python, Flask, Pandas, and Scikit-learn.
+                </p>
+            </div>
+
+            <div class="col-lg-5 text-lg-end">
+                <div class="footer-links mb-3">
+                    <a href="#project">Project</a>
+                    <a href="#dataset">Dataset</a>
+                    <a href="#algorithm">Algorithm</a>
+                    <a href="#test">Predict</a>
+                </div>
+                <p>
+                    &copy; <span id="copyrightYear"></span> CabFare.
+                    All rights reserved.
+                </p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<button type="button" class="back-to-top" id="backToTop"
+        aria-label="Back to top" title="Back to top">
+    <i class="bi bi-arrow-up"></i>
+</button>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+    document.getElementById("copyrightYear").textContent =
+        new Date().getFullYear();
+
+    const backToTopButton = document.getElementById("backToTop");
+
+    backToTopButton.addEventListener("click", function () {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    });
+
+    const tripForm = document.getElementById("tripForm");
+    const predictButton = document.getElementById("predictButton");
+
+    tripForm.addEventListener("submit", function () {
+        if (tripForm.checkValidity()) {
+            predictButton.disabled = true;
+            predictButton.innerHTML =
+                '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Calculating Trip Price...';
+        }
+    });
+</script>
+
+</body>
+</html>
